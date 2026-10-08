@@ -72,7 +72,20 @@ taste_concierge/
 tests/             40 pytest tests: param building, auth header, error
                    paths, agent flow end-to-end on fixtures, plan
                    composition, offline labeling, web endpoints.
-docs/              static replay of the --demo transcript (GitHub Pages).
+docs/              interactive fixture demo + replay of the --demo transcript
+                   (GitHub Pages).
+```
+
+```mermaid
+flowchart LR
+    U[User likes<br>"movies: Inception, music: Radiohead"] --> A[TasteConciergeAgent<br>agent.py — deterministic parser]
+    A -->|GET /search| Q[(Qloo API<br>hackathon.api.qloo.com)]
+    A -->|GET /v2/insights<br>signal.interests.entities| Q
+    Q -->|entities + tags| A
+    A --> P[Evening plan<br>4 slots, each pick explained<br>by its signal ids + shared tags]
+    A --> T[api_trail<br>every call logged]
+    W[web.py chat demo] --- A
+    C[cli.py --demo] --- A
 ```
 
 ### Qloo API usage (per the hackathon developer guide)
