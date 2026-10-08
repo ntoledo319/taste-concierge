@@ -1,0 +1,37 @@
+{
+  "results": {
+    "entities": [
+      {
+        "entity_id": "0718293A4B5C6D7E8F90A1B2C3D4E5F6",
+        "name": "Ippudo Westside",
+        "types": ["urn:entity:place"],
+        "properties": {
+          "description": "Bustling ramen house famous for its rich tonkotsu broth, sleek wood interior and consistently long lines.",
+          "address": "321 W 51st St, New York, NY",
+          "cuisine": "Japanese, Ramen"
+        },
+        "tags": [
+          {"id": "TDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", "name": "ramen"},
+          {"id": "T55555555555555555555555555555555", "name": "omakase"}
+        ],
+        "popularity": 0.84
+      },
+      {
+        "entity_id": "18293A4B5C6D7E8F90A1B2C3D4E5F607",
+        "name": "COTE Korean Steakhouse",
+        "types": ["urn:entity:place"],
+        "properties": {
+          "description": "Michelin-starred Korean barbecue meets American steakhouse, with dry-aged beef grilled at the table and a lively dining room.",
+          "address": "16 W 22nd St, New York, NY",
+          "cuisine": "Korean, Steakhouse"
+        },
+        "tags": [
+          {"id": "T66666666666666666666666666666666", "name": "fine dining"},
+          {"id": "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", "name": "korean bbq"}
+        ],
+        "popularity": 0.87
+      }
+    ]
+  },
+  "meta": {"signal_entities": ["A1B2C3D4E5F60718293A4B5C6D7E8F90"]}
+}

@@ -1,0 +1,52 @@
+{
+  "results": {
+    "entities": [
+      {
+        "entity_id": "D4E5F60718293A4B5C6D7E8F90A1B2C3",
+        "name": "Blade Runner 2049",
+        "types": ["urn:entity:movie"],
+        "properties": {
+          "description": "A young blade runner's discovery of a long-buried secret leads him to track down former blade runner Rick Deckard.",
+          "release_year": 2017,
+          "duration": 164
+        },
+        "tags": [
+          {"id": "T11111111111111111111111111111111", "name": "sci-fi"},
+          {"id": "TBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", "name": "neo-noir"}
+        ],
+        "popularity": 0.89
+      },
+      {
+        "entity_id": "E5F60718293A4B5C6D7E8F90A1B2C3D4",
+        "name": "Arrival",
+        "types": ["urn:entity:movie"],
+        "properties": {
+          "description": "A linguist works with the military to communicate with alien lifeforms after twelve mysterious spacecraft appear around the world.",
+          "release_year": 2016,
+          "duration": 116
+        },
+        "tags": [
+          {"id": "T11111111111111111111111111111111", "name": "sci-fi"},
+          {"id": "TCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", "name": "cerebral"}
+        ],
+        "popularity": 0.88
+      },
+      {
+        "entity_id": "F60718293A4B5C6D7E8F90A1B2C3D4E5",
+        "name": "Your Name",
+        "types": ["urn:entity:movie"],
+        "properties": {
+          "description": "Two strangers find themselves linked in a bizarre way: they occasionally swap bodies, and must find each other before a comet strikes.",
+          "release_year": 2016,
+          "duration": 106
+        },
+        "tags": [
+          {"id": "T33333333333333333333333333333333", "name": "animation"},
+          {"id": "T44444444444444444444444444444444", "name": "fantasy"}
+        ],
+        "popularity": 0.86
+      }
+    ]
+  },
+  "meta": {"signal_entities": ["9F8D1A2B3C4E5F60718293A4B5C6D7E8", "1A2B3C4D5E6F708192A3B4C5D6E7F809"]}
+}

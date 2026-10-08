@@ -1,0 +1,16 @@
+{
+  "results": {
+    "tags": [
+      {"id": "T11111111111111111111111111111111", "name": "sci-fi", "type": "urn:tag:genre"},
+      {"id": "T22222222222222222222222222222222", "name": "thriller", "type": "urn:tag:genre"},
+      {"id": "T33333333333333333333333333333333", "name": "animation", "type": "urn:tag:genre"},
+      {"id": "T44444444444444444444444444444444", "name": "fantasy", "type": "urn:tag:genre"},
+      {"id": "T55555555555555555555555555555555", "name": "omakase", "type": "urn:tag:cuisine"},
+      {"id": "T66666666666666666666666666666666", "name": "fine dining", "type": "urn:tag:cuisine"},
+      {"id": "T77777777777777777777777777777777", "name": "alternative rock", "type": "urn:tag:genre"},
+      {"id": "T88888888888888888888888888888888", "name": "experimental", "type": "urn:tag:genre"},
+      {"id": "T99999999999999999999999999999999", "name": "science fiction", "type": "urn:tag:genre"}
+    ]
+  },
+  "meta": {"total": 9}
+}

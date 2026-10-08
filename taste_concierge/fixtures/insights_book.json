@@ -1,0 +1,37 @@
+{
+  "results": {
+    "entities": [
+      {
+        "entity_id": "4B5C6D7E8F90A1B2C3D4E5F607182930",
+        "name": "The Three-Body Problem",
+        "types": ["urn:entity:book"],
+        "properties": {
+          "description": "Liu Cixin's Hugo-winning first contact epic, spanning the Cultural Revolution to a virtual-reality game hiding an alien invasion.",
+          "author": "Liu Cixin",
+          "publication_year": 2008
+        },
+        "tags": [
+          {"id": "T99999999999999999999999999999999", "name": "science fiction"},
+          {"id": "T00000000000000000000000000000001", "name": "hard sf"}
+        ],
+        "popularity": 0.85
+      },
+      {
+        "entity_id": "5C6D7E8F90A1B2C3D4E5F60718293041",
+        "name": "Neuromancer",
+        "types": ["urn:entity:book"],
+        "properties": {
+          "description": "William Gibson's genre-defining cyberpunk novel following a washed-up hacker hired for one last job in cyberspace.",
+          "author": "William Gibson",
+          "publication_year": 1984
+        },
+        "tags": [
+          {"id": "T99999999999999999999999999999999", "name": "science fiction"},
+          {"id": "T00000000000000000000000000000002", "name": "cyberpunk"}
+        ],
+        "popularity": 0.82
+      }
+    ]
+  },
+  "meta": {"signal_entities": ["C3D4E5F60718293A4B5C6D7E8F90A1B2"]}
+}

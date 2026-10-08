@@ -1,0 +1,101 @@
+{
+  "inception": {
+    "results": [
+      {
+        "id": "9F8D1A2B3C4E5F60718293A4B5C6D7E8",
+        "name": "Inception",
+        "types": ["urn:entity:movie"],
+        "properties": {
+          "description": "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.",
+          "release_year": 2010,
+          "content_rating": "PG-13"
+        },
+        "tags": [
+          {"id": "T11111111111111111111111111111111", "name": "sci-fi"},
+          {"id": "T22222222222222222222222222222222", "name": "thriller"}
+        ],
+        "popularity": 0.94
+      }
+    ],
+    "meta": {"total": 1, "query": "inception"}
+  },
+  "spirited away": {
+    "results": [
+      {
+        "id": "1A2B3C4D5E6F708192A3B4C5D6E7F809",
+        "name": "Spirited Away",
+        "types": ["urn:entity:movie"],
+        "properties": {
+          "description": "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches and spirits.",
+          "release_year": 2001,
+          "content_rating": "PG"
+        },
+        "tags": [
+          {"id": "T33333333333333333333333333333333", "name": "animation"},
+          {"id": "T44444444444444444444444444444444", "name": "fantasy"}
+        ],
+        "popularity": 0.91
+      }
+    ],
+    "meta": {"total": 1, "query": "spirited away"}
+  },
+  "sushi nakazawa": {
+    "results": [
+      {
+        "id": "A1B2C3D4E5F60718293A4B5C6D7E8F90",
+        "name": "Sushi Nakazawa",
+        "types": ["urn:entity:place"],
+        "properties": {
+          "description": "Intimate West Village omakase counter from a Jiro Dreams of Sushi apprentice, serving a procession of pristine nigiri.",
+          "address": "23 Commerce St, New York, NY",
+          "cuisine": "Japanese, Sushi"
+        },
+        "tags": [
+          {"id": "T55555555555555555555555555555555", "name": "omakase"},
+          {"id": "T66666666666666666666666666666666", "name": "fine dining"}
+        ],
+        "popularity": 0.83
+      }
+    ],
+    "meta": {"total": 1, "query": "sushi nakazawa"}
+  },
+  "radiohead": {
+    "results": [
+      {
+        "id": "B2C3D4E5F60718293A4B5C6D7E8F90A1",
+        "name": "Radiohead",
+        "types": ["urn:entity:artist"],
+        "properties": {
+          "description": "English rock band known for experimental soundscapes, from OK Computer's alienation anthems to Kid A's electronic reinvention.",
+          "genre": "alternative rock"
+        },
+        "tags": [
+          {"id": "T77777777777777777777777777777777", "name": "alternative rock"},
+          {"id": "T88888888888888888888888888888888", "name": "experimental"}
+        ],
+        "popularity": 0.95
+      }
+    ],
+    "meta": {"total": 1, "query": "radiohead"}
+  },
+  "dune": {
+    "results": [
+      {
+        "id": "C3D4E5F60718293A4B5C6D7E8F90A1B2",
+        "name": "Dune",
+        "types": ["urn:entity:book"],
+        "properties": {
+          "description": "Frank Herbert's epic of politics, religion and ecology on the desert planet Arrakis, source of the universe's most valuable substance.",
+          "author": "Frank Herbert",
+          "publication_year": 1965
+        },
+        "tags": [
+          {"id": "T99999999999999999999999999999999", "name": "science fiction"},
+          {"id": "TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "name": "classic"}
+        ],
+        "popularity": 0.92
+      }
+    ],
+    "meta": {"total": 1, "query": "dune"}
+  }
+}

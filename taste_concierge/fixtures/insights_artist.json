@@ -1,0 +1,35 @@
+{
+  "results": {
+    "entities": [
+      {
+        "entity_id": "293A4B5C6D7E8F90A1B2C3D4E5F60718",
+        "name": "Portishead",
+        "types": ["urn:entity:artist"],
+        "properties": {
+          "description": "Bristol trip-hop pioneers whose noir atmospheres and Beth Gibbons' haunting vocals defined the sound of the 90s underground.",
+          "genre": "trip-hop"
+        },
+        "tags": [
+          {"id": "TFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "name": "trip-hop"},
+          {"id": "T88888888888888888888888888888888", "name": "experimental"}
+        ],
+        "popularity": 0.79
+      },
+      {
+        "entity_id": "3A4B5C6D7E8F90A1B2C3D4E5F6071829",
+        "name": "Massive Attack",
+        "types": ["urn:entity:artist"],
+        "properties": {
+          "description": "Bristol collective that fused dub, soul and hip-hop into the blueprint for trip-hop on Blue Lines and Mezzanine.",
+          "genre": "trip-hop"
+        },
+        "tags": [
+          {"id": "TFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "name": "trip-hop"},
+          {"id": "T77777777777777777777777777777777", "name": "alternative rock"}
+        ],
+        "popularity": 0.81
+      }
+    ]
+  },
+  "meta": {"signal_entities": ["B2C3D4E5F60718293A4B5C6D7E8F90A1"]}
+}

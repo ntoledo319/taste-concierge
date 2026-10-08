@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>taste-concierge — demo replay</title>
+<meta name="description" content="Static replay of the taste-concierge demo: an agentic evening planner that interviews you, resolves your likes via Qloo /search, and composes an explained evening plan from Qloo /v2/insights.">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif;
+         background: #0b1020; color: #e6e9f2; }
+  a { color: #6db3ff; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #6db3ff; outline-offset: 2px; border-radius: 4px;
+  }
+
+  /* ---- site header ---- */
+  #sitebar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+             padding: 14px 20px; border-bottom: 1px solid #232a45;
+             background: #0e1428; }
+  #sitebar .brand { font-weight: 650; font-size: 15px; margin-right: auto; }
+  #sitebar .brand span { color: #8b93b0; font-weight: 400; }
+  #sitebar nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  #sitebar nav a { font-size: 13px; text-decoration: none; padding: 6px 12px;
+                   border: 1px solid #2c3554; border-radius: 8px; color: #e6e9f2; }
+  #sitebar nav a:hover { background: #1c2440; }
+
+  .note { margin: 14px 20px 0; padding: 10px 14px; font-size: 13px;
+          background: #131a30; border: 1px solid #2c3554; border-left: 3px solid #f0a832;
+          border-radius: 6px; color: #c9d1e8; }
+  .note code { color: #6db3ff; }
+
+  /* ---- simulator layout (mirrors taste_concierge/web.py) ---- */
+  #app { display: flex; height: calc(100vh - 116px); min-height: 480px; margin-top: 14px;
+         border-top: 1px solid #232a45; }
+  #chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #chat header { padding: 14px 20px; border-bottom: 1px solid #232a45;
+                 display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  #chat header h1 { margin: 0; font-size: 16px; }
+  #chat header small { color: #8b93b0; }
+  #replay { padding: 8px 16px; border: 0; border-radius: 8px; background: #2f6df6;
+            color: white; font-size: 13px; cursor: pointer; margin-left: auto; }
+  #replay:hover { background: #4a82f8; }
+  #replay[disabled] { opacity: .55; cursor: default; }
+  #log { flex: 1; overflow-y: auto; padding: 16px 20px; }
+  .msg { max-width: 75%; padding: 10px 14px; border-radius: 14px;
+         margin: 6px 0; white-space: pre-wrap; line-height: 1.45; font-size: 14px; }
+  .agent { background: #1c2440; border-bottom-left-radius: 4px; }
+  .you { background: #0d3b66; margin-left: auto; border-bottom-right-radius: 4px; }
+  .sys { max-width: 85%; margin: 10px auto; text-align: center; font-size: 12.5px;
+         color: #f0a832; background: #131a30; border: 1px dashed #2c3554;
+         border-radius: 8px; padding: 8px 12px; }
+  form { display: flex; gap: 8px; padding: 12px 20px; border-top: 1px solid #232a45; }
+  input { flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid #2c3554;
+          background: #131a30; color: inherit; font-size: 14px; }
+  input[disabled] { opacity: .6; }
+  #panel { width: 360px; border-left: 1px solid #232a45; padding: 16px;
+           overflow-y: auto; }
+  #panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em;
+              color: #8b93b0; }
+  .call { font-size: 12.5px; padding: 8px 10px; border-left: 3px solid #f0a832;
+          background: #131a30; margin: 6px 0; border-radius: 4px; word-break: break-all; }
+  .pick { font-size: 12.5px; background: #131a30; padding: 8px 10px;
+          border-radius: 6px; margin: 6px 0; }
+  .pick b { color: #6db3ff; }
+  .muted { color: #8b93b0; font-style: italic; font-size: 12.5px; }
+
+  @media (max-width: 860px) {
+    #app { flex-direction: column; height: auto; }
+    #log { min-height: 50vh; }
+    #panel { width: auto; border-left: 0; border-top: 1px solid #232a45; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div id="sitebar">
+    <div class="brand">taste-concierge <span>— an evening planned by Qloo's taste graph</span></div>
+    <nav aria-label="Project links">
+      <a href="https://github.com/ntoledo319/taste-concierge">GitHub repo</a>
+      <a href="https://qloo.devpost.com/">Qloo Agentic Hackathon</a>
+    </nav>
+  </div>
+
+  <p class="note">
+    <strong>Static replay</strong> of <code>python3 -m taste_concierge.cli --demo</code>
+    running offline on the recorded Qloo fixtures in the repo. The live agent
+    and web simulator are in the repo (<code>python3 -m taste_concierge.web</code>);
+    this page is a transcript, not a live Qloo connection. Live API
+    verification happens when the hackathon API key arrives.
+  </p>
+
+  <div id="app">
+    <div id="chat">
+      <header>
+        <div>
+          <h1>taste-concierge — an evening planned by Qloo's taste graph</h1>
+          <small id="mode">static replay · Qloo: OFFLINE — recorded fixtures · phrasing: deterministic templates</small>
+        </div>
+        <button id="replay" type="button">&#9654; Replay demo</button>
+      </header>
+      <div id="log" aria-live="polite" aria-label="Demo conversation"></div>
+      <form aria-hidden="true">
+        <input disabled placeholder="Static replay — press “Replay demo” to watch the scripted conversation" aria-label="Input disabled in static replay">
+      </form>
+    </div>
+    <div id="panel">
+      <h2>Evening plan</h2>
+      <div id="plan"><span class="muted">no plan yet</span></div>
+      <h2>Likes collected</h2>
+      <div id="likes"><span class="muted">none yet</span></div>
+      <h2>Qloo API trail</h2>
+      <div id="trail"><span class="muted">none yet</span></div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Verbatim lines from `python3 -m taste_concierge.cli --demo` against the
+  // bundled fixtures (see README.md). Entity ids are the fixture ids.
+  var SCRIPT = [
+    { role: "agent",
+      text: "Hi — I'm your taste concierge. Tell me what you love and I'll plan an evening around it using Qloo's cultural taste graph: a dinner spot, a movie, a soundtrack, and a book, each pick explained by the exact signals behind it. Heads up: I'm running OFFLINE on recorded Qloo fixtures, so every pick below is labeled [fixture].\nTry: \"movies: Inception and Spirited Away, music: Radiohead\" — then say \"plan my evening\"." },
+    { role: "you", text: "movies: Inception and Spirited Away" },
+    { role: "agent",
+      text: "Got it — I resolved movie like Inception (id 9F8D1A2B3C4E5F60718293A4B5C6D7E8); movie like Spirited Away (id 1A2B3C4D5E6F708192A3B4C5D6E7F809) via Qloo /search. Still open: dinner, nightcap soundtrack, read before bed. Or say \"plan my evening\".",
+      likes: [
+        { slot: "Movie", name: "Inception", id: "9F8D1A2B3C4E5F60718293A4B5C6D7E8" },
+        { slot: "Movie", name: "Spirited Away", id: "1A2B3C4D5E6F708192A3B4C5D6E7F809" }
+      ],
+      calls: [
+        "GET /search query=Inception types=urn:entity:movie → 1 result(s) [fixture]",
+        "GET /search query=Spirited Away types=urn:entity:movie → 1 result(s) [fixture]"
+      ] },
+    { role: "you", text: "I love the restaurant Sushi Nakazawa" },
+    { role: "agent",
+      text: "Got it — I resolved dinner like Sushi Nakazawa (id A1B2C3D4E5F60718293A4B5C6D7E8F90) via Qloo /search. Still open: nightcap soundtrack, read before bed. Or say \"plan my evening\".",
+      likes: [ { slot: "Dinner", name: "Sushi Nakazawa", id: "A1B2C3D4E5F60718293A4B5C6D7E8F90" } ],
+      calls: [ "GET /search query=Sushi Nakazawa types=urn:entity:place → 1 result(s) [fixture]" ] },
+    { role: "you", text: "music: Radiohead" },
+    { role: "agent",
+      text: "Got it — I resolved nightcap soundtrack like Radiohead (id B2C3D4E5F60718293A4B5C6D7E8F90A1) via Qloo /search. Still open: read before bed. Or say \"plan my evening\".",
+      likes: [ { slot: "Nightcap soundtrack", name: "Radiohead", id: "B2C3D4E5F60718293A4B5C6D7E8F90A1" } ],
+      calls: [ "GET /search query=Radiohead types=urn:entity:artist → 1 result(s) [fixture]" ] },
+    { role: "you", text: "books: Dune" },
+    { role: "agent",
+      text: "Got it — I resolved read before bed like Dune (id C3D4E5F60718293A4B5C6D7E8F90A1B2) via Qloo /search. I have all four categories — say \"plan my evening\".",
+      likes: [ { slot: "Read before bed", name: "Dune", id: "C3D4E5F60718293A4B5C6D7E8F90A1B2" } ],
+      calls: [ "GET /search query=Dune types=urn:entity:book → 1 result(s) [fixture]" ] },
+    { role: "you", text: "plan my evening" },
+    { role: "sys", text: "Agent calls GET /v2/insights once per category, signaled on the resolved entity ids" },
+    { role: "agent",
+      text: "Here's your evening, built from Qloo's taste graph:\n1. Movie: Blade Runner 2049 — A young blade runner's discovery of a long-buried secret leads him to track down former blade runner Rick Deckard.\n   why: Qloo /v2/insights ranked this from signal.interests.entities=9F8D1A2B3C4E5F60718293A4B5C6D7E8,1A2B3C4D5E6F708192A3B4C5D6E7F809 (Inception + Spirited Away). It shares your taste tags: sci-fi.\n   entity id: D4E5F60718293A4B5C6D7E8F90A1B2C3 [fixture]",
+      picks: [ { slot: "Movie", name: "Blade Runner 2049", id: "D4E5F60718293A4B5C6D7E8F90A1B2C3", why: "signal.interests.entities=…D7E8,…F809 (Inception + Spirited Away); shared tag: sci-fi" } ],
+      calls: [ "GET /v2/insights filter.type=urn:entity:movie signal.interests.entities=9F8D1A2B3C4E5F60718293A4B5C6D7E8,1A2B3C4D5E6F708192A3B4C5D6E7F809 → 3 result(s) [fixture]" ] },
+    { role: "agent",
+      text: "2. Dinner: Ippudo Westside — Bustling ramen house famous for its rich tonkotsu broth, sleek wood interior and consistently long lines.\n   why: Qloo /v2/insights ranked this from signal.interests.entities=A1B2C3D4E5F60718293A4B5C6D7E8F90 (Sushi Nakazawa). It shares your taste tags: omakase.\n   entity id: 0718293A4B5C6D7E8F90A1B2C3D4E5F6 [fixture]",
+      picks: [ { slot: "Dinner", name: "Ippudo Westside", id: "0718293A4B5C6D7E8F90A1B2C3D4E5F6", why: "signal.interests.entities=…8F90 (Sushi Nakazawa); shared tag: omakase" } ],
+      calls: [ "GET /v2/insights filter.type=urn:entity:place signal.interests.entities=A1B2C3D4E5F60718293A4B5C6D7E8F90 → 2 result(s) [fixture]" ] },
+    { role: "agent",
+      text: "3. Nightcap soundtrack: Portishead — Bristol trip-hop pioneers whose noir atmospheres and Beth Gibbons' haunting vocals defined the sound of the 90s underground.\n   why: Qloo /v2/insights ranked this from signal.interests.entities=B2C3D4E5F60718293A4B5C6D7E8F90A1 (Radiohead). It shares your taste tags: experimental.\n   entity id: 293A4B5C6D7E8F90A1B2C3D4E5F60718 [fixture]",
+      picks: [ { slot: "Nightcap soundtrack", name: "Portishead", id: "293A4B5C6D7E8F90A1B2C3D4E5F60718", why: "signal.interests.entities=…90A1 (Radiohead); shared tag: experimental" } ],
+      calls: [ "GET /v2/insights filter.type=urn:entity:artist signal.interests.entities=B2C3D4E5F60718293A4B5C6D7E8F90A1 → 2 result(s) [fixture]" ] },
+    { role: "agent",
+      text: "4. Read before bed: The Three-Body Problem — Liu Cixin's Hugo-winning first contact epic, spanning the Cultural Revolution to a virtual-reality game hiding an alien invasion.\n   why: Qloo /v2/insights ranked this from signal.interests.entities=C3D4E5F60718293A4B5C6D7E8F90A1B2 (Dune). It shares your taste tags: science fiction.\n   entity id: 4B5C6D7E8F90A1B2C3D4E5F607182930 [fixture]\n(all picks [fixture])",
+      picks: [ { slot: "Read before bed", name: "The Three-Body Problem", id: "4B5C6D7E8F90A1B2C3D4E5F607182930", why: "signal.interests.entities=…A1B2 (Dune); shared tag: science fiction" } ],
+      calls: [ "GET /v2/insights filter.type=urn:entity:book signal.interests.entities=C3D4E5F60718293A4B5C6D7E8F90A1B2 → 2 result(s) [fixture]" ] }
+  ];
+
+  var log = document.getElementById("log");
+  var planEl = document.getElementById("plan");
+  var likesEl = document.getElementById("likes");
+  var trailEl = document.getElementById("trail");
+  var replayBtn = document.getElementById("replay");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var likes = [];
+  var picks = [];
+  var calls = [];
+  var timers = [];
+
+  function esc(t) {
+    return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function scrollLog() {
+    log.scrollTo({ top: log.scrollHeight, behavior: reduced ? "auto" : "smooth" });
+  }
+
+  function addMsg(step) {
+    var d = document.createElement("div");
+    if (step.role === "sys") {
+      d.className = "sys";
+      d.textContent = step.text;
+    } else {
+      d.className = "msg " + step.role;
+      d.innerHTML = esc(step.text);
+    }
+    log.appendChild(d);
+    scrollLog();
+  }
+
+  function renderPanel() {
+    likesEl.innerHTML = likes.map(function (l) {
+      return '<div class="pick"><b>' + esc(l.slot) + "</b> " + esc(l.name) +
+        "<br><small>" + l.id + " [fixture]</small></div>";
+    }).join("") || '<span class="muted">none yet</span>';
+    planEl.innerHTML = picks.length ? picks.map(function (p) {
+      return '<div class="pick"><b>' + esc(p.slot) + ":</b> " + esc(p.name) +
+        "<br><small>" + esc(p.why) + "</small><br><small>" + p.id +
+        " [fixture]</small></div>";
+    }).join("") : '<span class="muted">no plan yet</span>';
+    trailEl.innerHTML = calls.map(function (c) {
+      return '<div class="call">' + esc(c) + "</div>";
+    }).join("") || '<span class="muted">none yet</span>';
+  }
+
+  function applyStep(step) {
+    addMsg(step);
+    if (step.likes) likes = likes.concat(step.likes);
+    if (step.picks) picks = picks.concat(step.picks);
+    if (step.calls) calls = calls.concat(step.calls);
+    renderPanel();
+  }
+
+  function reset() {
+    timers.forEach(clearTimeout);
+    timers = [];
+    log.innerHTML = "";
+    likes = [];
+    picks = [];
+    calls = [];
+    renderPanel();
+  }
+
+  function play() {
+    reset();
+    replayBtn.disabled = true;
+    if (reduced) {
+      // No staggered animation: render the full transcript immediately.
+      SCRIPT.forEach(applyStep);
+      replayBtn.disabled = false;
+      return;
+    }
+    var t = 400;
+    SCRIPT.forEach(function (step) {
+      timers.push(setTimeout(function () { applyStep(step); }, t));
+      t += step.role === "you" ? 800 : (step.role === "sys" ? 1000 : 1500);
+    });
+    timers.push(setTimeout(function () { replayBtn.disabled = false; }, t));
+  }
+
+  replayBtn.addEventListener("click", play);
+
+  // Auto-play once on load so judges see the full flow without clicking.
+  if (reduced) {
+    play();
+  } else {
+    timers.push(setTimeout(play, 800));
+  }
+})();
+</script>
+</body>
+</html>
