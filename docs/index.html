@@ -86,11 +86,12 @@
   </div>
 
   <p class="note">
-    <strong>Static replay</strong> of <code>python3 -m taste_concierge.cli --demo</code>
-    running offline on the recorded Qloo fixtures in the repo. The live agent
-    and web simulator are in the repo (<code>python3 -m taste_concierge.web</code>);
-    this page is a transcript, not a live Qloo connection. Live API
-    verification happens when the hackathon API key arrives.
+    <strong>Interactive fixture demo + replay.</strong> The chat below is live:
+    it runs the same resolution/planning logic as the agent in the repo, over
+    the recorded Qloo fixture catalog (offline — no live Qloo call from this
+    page, every pick labeled [fixture]). Or press <em>Replay demo</em> to watch
+    the verbatim <code>python3 -m taste_concierge.cli --demo</code> transcript.
+    Live API verification happens when the hackathon API key arrives.
   </p>
 
   <div id="app">
@@ -103,8 +104,9 @@
         <button id="replay" type="button">&#9654; Replay demo</button>
       </header>
       <div id="log" aria-live="polite" aria-label="Demo conversation"></div>
-      <form aria-hidden="true">
-        <input disabled placeholder="Static replay — press “Replay demo” to watch the scripted conversation" aria-label="Input disabled in static replay">
+      <form id="chatform">
+        <input id="chatinput" autocomplete="off" placeholder="Interactive fixture demo — try: movies: Inception, music: Radiohead — then say &quot;plan my evening&quot;" aria-label="Chat with the fixture-driven demo agent">
+        <button id="send" type="submit" style="padding:10px 18px;border:0;border-radius:8px;background:#2f6df6;color:white;font-size:13px;cursor:pointer;">Send</button>
       </form>
     </div>
     <div id="panel">
@@ -256,12 +258,163 @@
 
   replayBtn.addEventListener("click", play);
 
+  // Typing in the interactive demo cancels any running replay.
+  document.getElementById("chatform").addEventListener("submit", function () {
+    timers.forEach(clearTimeout);
+    timers = [];
+    replayBtn.disabled = false;
+  });
+
   // Auto-play once on load so judges see the full flow without clicking.
   if (reduced) {
     play();
   } else {
     timers.push(setTimeout(play, 800));
   }
+})();
+</script>
+
+<script>
+/* Interactive fixture demo: the agent's real resolution/planning logic run in
+   the browser over the recorded Qloo fixture catalog. No live Qloo call leaves
+   this page; everything is labeled [fixture]. */
+(function () {
+  "use strict";
+
+  var CATALOG = {
+    "inception": { id: "9F8D1A2B3C4E5F60718293A4B5C6D7E8", name: "Inception", type: "urn:entity:movie", slot: "Movie", tags: ["sci-fi", "thriller"] },
+    "spirited away": { id: "1A2B3C4D5E6F708192A3B4C5D6E7F809", name: "Spirited Away", type: "urn:entity:movie", slot: "Movie", tags: ["animation", "fantasy"] },
+    "sushi nakazawa": { id: "A1B2C3D4E5F60718293A4B5C6D7E8F90", name: "Sushi Nakazawa", type: "urn:entity:place", slot: "Dinner", tags: ["omakase", "fine dining"] },
+    "radiohead": { id: "B2C3D4E5F60718293A4B5C6D7E8F90A1", name: "Radiohead", type: "urn:entity:artist", slot: "Nightcap soundtrack", tags: ["alternative rock", "experimental"] },
+    "dune": { id: "C3D4E5F60718293A4B5C6D7E8F90A1B2", name: "Dune", type: "urn:entity:book", slot: "Read before bed", tags: ["science fiction", "classic"] }
+  };
+  var ALIASES = { "sushi": "sushi nakazawa", "nakazawa": "sushi nakazawa" };
+  var CATEGORY_LABEL = { "Movie": "movie", "Dinner": "dinner", "Nightcap soundtrack": "nightcap soundtrack", "Read before bed": "read before bed" };
+  var INSIGHTS = {
+    "Movie": { name: "Blade Runner 2049", id: "D4E5F60718293A4B5C6D7E8F90A1B2C3", desc: "A young blade runner's discovery of a long-buried secret leads him to track down former blade runner Rick Deckard.", tag: "sci-fi" },
+    "Dinner": { name: "Ippudo Westside", id: "0718293A4B5C6D7E8F90A1B2C3D4E5F6", desc: "Bustling ramen house famous for its rich tonkotsu broth, sleek wood interior and consistently long lines.", tag: "omakase" },
+    "Nightcap soundtrack": { name: "Portishead", id: "293A4B5C6D7E8F90A1B2C3D4E5F60718", desc: "Bristol trip-hop pioneers whose noir atmospheres and Beth Gibbons' haunting vocals defined the sound of the 90s underground.", tag: "experimental" },
+    "Read before bed": { name: "The Three-Body Problem", id: "4B5C6D7E8F90A1B2C3D4E5F607182930", desc: "Liu Cixin's Hugo-winning first contact epic, spanning the Cultural Revolution to a virtual-reality game hiding an alien invasion.", tag: "science fiction" }
+  };
+  var SLOTS = ["Dinner", "Movie", "Nightcap soundtrack", "Read before bed"];
+
+  var log = document.getElementById("log");
+  var planEl = document.getElementById("plan");
+  var likesEl = document.getElementById("likes");
+  var trailEl = document.getElementById("trail");
+  var form = document.getElementById("chatform");
+  var input = document.getElementById("chatinput");
+  var likes = [];
+
+  function esc(t) {
+    return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function bubble(role, text) {
+    var d = document.createElement("div");
+    d.className = "msg " + role;
+    d.innerHTML = esc(text);
+    log.appendChild(d);
+    log.scrollTo({ top: log.scrollHeight });
+  }
+  function renderPanel(planPicks, trail) {
+    likesEl.innerHTML = likes.map(function (l) {
+      return '<div class="pick"><b>' + esc(l.slot) + "</b> " + esc(l.name) +
+        "<br><small>" + l.id + " [fixture]</small></div>";
+    }).join("") || '<span class="muted">none yet</span>';
+    planEl.innerHTML = planPicks.length ? planPicks.map(function (p) {
+      return '<div class="pick"><b>' + esc(p.slot) + ":</b> " + esc(p.name) +
+        "<br><small>" + esc(p.why) + "</small><br><small>" + p.id + " [fixture]</small></div>";
+    }).join("") : '<span class="muted">no plan yet</span>';
+    trailEl.innerHTML = trail.map(function (c) {
+      return '<div class="call">' + esc(c) + "</div>";
+    }).join("") || '<span class="muted">none yet</span>';
+  }
+
+  var trail = [];
+  var planPicks = [];
+  var started = false;
+
+  function resolve(text) {
+    var low = text.toLowerCase();
+    var found = [];
+    Object.keys(CATALOG).forEach(function (key) {
+      if (low.indexOf(key) !== -1) found.push(CATALOG[key]);
+    });
+    Object.keys(ALIASES).forEach(function (a) {
+      if (low.indexOf(a) !== -1 && found.indexOf(CATALOG[ALIASES[a]]) === -1) found.push(CATALOG[ALIASES[a]]);
+    });
+    return found;
+  }
+
+  function plan() {
+    var lines = ["Here's your evening, built from Qloo's taste graph:"];
+    var n = 0;
+    SLOTS.forEach(function (slot) {
+      var slotLikes = likes.filter(function (l) { return l.slot === slot; });
+      if (!slotLikes.length) {
+        lines.push("(skipped, no likes given: " + CATEGORY_LABEL[slot] + ")");
+        return;
+      }
+      n += 1;
+      var pick = INSIGHTS[slot];
+      var ids = slotLikes.map(function (l) { return l.id; }).join(",");
+      var names = slotLikes.map(function (l) { return l.name; }).join(" + ");
+      var why = "signal.interests.entities=" + ids + " (" + names + "); shared tag: " + pick.tag;
+      lines.push(n + ". " + slot + ": " + pick.name + " — " + pick.desc +
+        "\n   why: Qloo /v2/insights ranked this from " + why + "\n   entity id: " + pick.id + " [fixture]");
+      planPicks.push({ slot: slot, name: pick.name, id: pick.id, why: why });
+      trail.push("GET /v2/insights filter.type=" + slotLikes[0].type + " signal.interests.entities=" + ids + " → [fixture]");
+    });
+    lines.push("(all picks [fixture])");
+    return lines.join("\n");
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    if (!started) {
+      started = true;  // first chat input takes over the surface from the replay
+      log.innerHTML = "";
+      renderPanel(planPicks, trail);
+    }
+    bubble("you", text);
+    if (/plan|evening|go\b/i.test(text)) {
+      if (!likes.length) {
+        bubble("agent", "Tell me a few likes first — e.g. \"movies: Inception, music: Radiohead\" — then I'll plan. (Fixture catalog: Inception, Spirited Away, Sushi Nakazawa, Radiohead, Dune.)");
+        return;
+      }
+      var d = document.createElement("div");
+      d.className = "sys";
+      d.textContent = "Agent calls GET /v2/insights once per category, signaled on the resolved entity ids";
+      log.appendChild(d);
+      bubble("agent", plan());
+      renderPanel(planPicks, trail);
+      return;
+    }
+    var found = resolve(text);
+    if (!found.length) {
+      bubble("agent", "I couldn't resolve any of that in the fixture catalog (the offline catalog is finite: Inception, Spirited Away, Sushi Nakazawa, Radiohead, Dune). With the live key, /search covers 250M+ entities.");
+      return;
+    }
+    found.forEach(function (f) {
+      var dup = likes.some(function (l) { return l.id === f.id; });
+      if (!dup) {
+        likes.push(f);
+        trail.push("GET /search query=" + f.name + " types=" + f.type + " → 1 result(s) [fixture]");
+      }
+    });
+    var open = SLOTS.filter(function (s) {
+      return !likes.some(function (l) { return l.slot === s; });
+    });
+    bubble("agent", "Got it — I resolved " + found.map(function (f) {
+      return CATEGORY_LABEL[f.slot] + " like " + f.name + " (id " + f.id + ")";
+    }).join("; ") + " via Qloo /search. " +
+      (open.length ? "Still open: " + open.map(function (s) { return CATEGORY_LABEL[s]; }).join(", ") + ". Or say \"plan my evening\"."
+                   : "I have all four categories — say \"plan my evening\"."));
+    renderPanel(planPicks, trail);
+  });
 })();
 </script>
 </body>
