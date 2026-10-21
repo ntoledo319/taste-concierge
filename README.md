@@ -19,6 +19,9 @@ client is built against the documented hackathon API
 `GET /v2/insights`, `GET /v2/tags`) and switches to live mode the moment
 `QLOO_API_KEY` is set — no code changes.
 
+**Live app:** <https://taste-concierge.vercel.app> (real Qloo calls; the GitHub
+Pages link below is the labeled offline replay).
+
 ## Run it
 
 Python 3.11+, stdlib only. No dependencies to install.
