@@ -10,9 +10,10 @@ labeled offline fixture).
 Entry for the **Qloo Agentic Hackathon** (Devpost, deadline Oct 30):
 <https://qloo.devpost.com/>
 
-**Status: LIVE-VERIFIED against the real hackathon API on 2026-10-08** (see
-`LIVE-VERIFICATION.md`: real `/search` + `/v2/insights` round-trips and a full
-live agent run). Offline fixtures remain the default for keyless runs; the
+**Status: LIVE-VERIFIED against the real hackathon API on 2026-10-08 and
+production-reverified end-to-end on 2026-10-21** (see `LIVE-VERIFICATION.md`:
+real `/search` + `/v2/insights` round-trips and full live agent runs). Offline
+fixtures remain the default for keyless runs; the
 client is built against the documented hackathon API
 (`https://hackathon.api.qloo.com`, `X-Api-Key` auth, `GET /search`,
 `GET /v2/insights`, `GET /v2/tags`) and switches to live mode the moment
