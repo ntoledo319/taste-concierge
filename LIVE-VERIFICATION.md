@@ -25,3 +25,10 @@ against `https://hackathon.api.qloo.com` with the key in `QLOO_API_KEY`
 
 Offline fixture mode remains available and labeled for judges without a key
 (`QLOO_OFFLINE=1`); live mode flips on with `QLOO_API_KEY` — same code path.
+
+## 3. Production re-verification — 2026-10-21
+
+- `GET https://taste-concierge.vercel.app/api/state` returned 200 in live mode.
+- A real two-step agent run resolved Inception (`18B098FD-3D84-4609-BFF3-ADF9A0B00E40`) and Radiohead (`70CAE5BF-2F4C-445C-A3E5-4EDACFC3591C`) through live `/search` calls, then planned The Matrix and Thom Yorke through live `/v2/insights` calls.
+- All four API-trail entries and both plan picks were labeled `live`, with real entity IDs; every request returned 200.
+- **PASS — the submitted production app works end-to-end on the live Qloo API; no withdrawal.**
